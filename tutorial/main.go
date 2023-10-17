@@ -3,9 +3,23 @@ package main
 import "fmt"
 
 func main() {
-	for i := 1; i <= 30; i++ {
-		fmt.Println("%d: %s", i, doFizzBuzz(i))
-	}
+	var a1 [5]int
+	a2 := [...]int{0, 1, 2, 3, 4}
+	fmt.Println(a1[0])
+	fmt.Println(a2[1])
+
+	//v := 0
+	//
+	//v = v + 1
+	//fmt.Printf("v = %d\n", v)
+	//
+	//p := &v
+	//*p = *p + 1
+	//fmt.Printf("v = %d\n", v)
+
+	//for i := 1; i <= 30; i++ {
+	//	fmt.Println("%d: %s", i, doFizzBuzz(i))
+	//}
 }
 
 func isTree(i int) bool {
