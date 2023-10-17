@@ -26,6 +26,8 @@ func main() {
 	engine.GET("/hello.jp", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "hello_jp.html", nil)
 	})
+	engine.GET("/name-form", nameFormHandler)
+	engine.POST("/register-name", registerNameHandler)
 
 	// start server
 	engine.Run(fmt.Sprintf(":%d", port))
@@ -33,4 +35,13 @@ func main() {
 
 func rootHandler(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "hello.html", nil)
+}
+
+func nameFormHandler(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "name_form.html", nil)
+}
+
+func registerNameHandler(ctx *gin.Context) {
+	name, _ := ctx.GetPostForm("name")
+	ctx.HTML(http.StatusOK, "result.html", gin.H{"Name": name})
 }
