@@ -18,13 +18,13 @@ func main() {
 
 	// routing
 	engine.GET("/hello", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "Hello world.")
+		ctx.HTML(http.StatusOK, "hello.html", nil)
 	})
 	engine.GET("/bye", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "Hello world.")
+		ctx.HTML(http.StatusOK, "bye.html", nil)
 	})
 	engine.GET("/hello.jp", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "bye.")
+		ctx.HTML(http.StatusOK, "hello_jp.html", nil)
 	})
 
 	// start server
