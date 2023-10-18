@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StatelessBirthday | formapp.go</title>
+</head>
+<body>
+<h1>誕生日入力画面</h1>
+<form action="/stateless/birthday" method="post">
+    <label>生年月日: </label>
+    <input type="date" name="birthday" value="2011-10-22"></input>
+    <input type="hidden" name="name" value="{{.Name}}">
+    <br>
+    <input type ="submit"name ="next"></input>
+</form>
+</body>
+</html>

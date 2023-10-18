@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StatelessMessage | formapp.go</title>
+</head>
+<body>
+<h1>メッセージ入力</h1>
+<form action="/stateless/message" method="post">
+    <label>メッセージ: </label>
+    <br>
+    <textarea type="text" name="message" value="ここにメッセージを入力してください"></textarea>
+    <input type="hidden" name="name" value="{{ .Name}}">
+    <input type="hidden" name="birthday" value="{{ .Birthday}}">
+    <br>
+    <input type="submit" name="確認">
+</form>
+</body>
+</html>
