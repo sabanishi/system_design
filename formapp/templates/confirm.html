@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>確認</h1>
-<form action="/stateless/confirm" method="post">
+<form action="{{.Target}}" method="post">
     <label>名前: {{.Name}}</label><br>
     <label>生年月日: {{.Birthday}}</label><br>
     <textarea readonly>{{.Message}}

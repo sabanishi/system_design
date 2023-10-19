@@ -51,7 +51,7 @@ func Confirm(ctx *gin.Context) {
 		return
 	}
 
-	ctx.HTML(http.StatusOK, "stateless-confirm.html", gin.H{"Name": name, "Birthday": birthday, "Message": message})
+	ctx.HTML(http.StatusOK, "confirm.html", gin.H{"Target": "/stateless/confirm", "Name": name, "Birthday": birthday, "Message": message})
 }
 
 func isExist(exist bool, message string, ctx *gin.Context) bool {

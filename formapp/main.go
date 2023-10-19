@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"formapp.go/service/session"
 	"net/http"
 
 	"formapp.go/service"
@@ -20,6 +21,15 @@ func main() {
 
 	engine.GET("/", service.RootHandler)
 
+	//5章
+	engine.GET("/session/start", session.Start)
+	engine.POST("/session/start", session.NameForm)
+	engine.POST("/session/name", session.BirthdayForm)
+	engine.POST("/session/birthday", session.MessageForm)
+	engine.POST("/session/message", session.Confirm)
+	engine.POST("/session/confirm", session.Start)
+
+	//4章
 	engine.GET("/stateless/start", stateless.Start)
 	engine.POST("/stateless/start", stateless.NameForm)
 	engine.POST("/stateless/name", stateless.BirthdayForm)
@@ -27,7 +37,7 @@ func main() {
 	engine.POST("/stateless/message", stateless.Confirm)
 	engine.POST("/stateless/confirm", stateless.Start)
 
-	/* 3章の範囲
+	/* 3章
 	// routing
 	engine.GET("/hello", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "hello.html", nil)
