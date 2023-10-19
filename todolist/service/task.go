@@ -54,5 +54,5 @@ func ShowTask(ctx *gin.Context) {
 	}
 
 	// Render task
-	ctx.String(http.StatusOK, task.Title)  // Modify it!!
+	ctx.String(http.StatusOK, task.Title) // Modify it!!
 }
