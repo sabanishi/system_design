@@ -1,0 +1,29 @@
+table{
+    width:100%;
+}
+
+td{
+    width:30%;
+    text-align: right;
+}
+
+th{
+    width:70%;
+    text-align: left;
+}
+
+th,td{
+    border:solid 1px #aaaaaa;
+}
+
+.center{
+    text-align: center;
+}
+
+.left{
+    text-align: left;
+}
+
+.right{
+    text-align: right;
+}
