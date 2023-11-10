@@ -43,6 +43,10 @@ func main() {
 	engine.POST("/task/edit/:id", service.UpdateTask)
 	engine.GET("/task/delete/:id", service.DeleteTask)
 
+	//ユーザー登録
+	engine.GET("/user/new", service.NewUserForm)
+	engine.POST("/user/new", service.RegisterUser)
+
 	// start server
 	engine.Run(fmt.Sprintf(":%d", port))
 }

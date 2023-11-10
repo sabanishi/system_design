@@ -13,3 +13,9 @@ type Task struct {
 	IsDone      bool      `db:"is_done"`
 	Description string    `db:"description"`
 }
+
+type User struct {
+	ID       uint64 `db:"id"`
+	Name     string `db:"name"`
+	Password []byte `db:"password"`
+}
