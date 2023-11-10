@@ -1,5 +1,19 @@
 {{ template "header" . }}
 <h1>List of tasks</h1>
+<form action="/list" method="GET">
+    <input type="text" name="kw" value="{{ .Kw }}">
+    <input type="submit" value="検索">
+    <br>
+    <input type="radio" name="is_done" value="all" checked>
+    <label for="all">全て</label><br>
+
+    <input type="radio" name="is_done" value="t">
+    <label for="completed">完了済みのみ</label><br>
+
+    <input type="radio" name="is_done" value="f">
+    <label for="incomplete">未完了のみ</label><br>
+</form>
+
 <p><a href="/task/new">新規登録</a></p>
 {{ if not .Tasks }}
     <p>登録データがありません．</p>

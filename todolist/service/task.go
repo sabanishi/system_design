@@ -18,9 +18,31 @@ func TaskList(ctx *gin.Context) {
 		return
 	}
 
+	kw := ctx.Query("kw")
+
+	//終了状態を取得
+	isDoneStr := ctx.Query("is_done")
+	isDoneExist := true
+
+	//isDoneをbool型に変換
+	isDone, err := strconv.ParseBool(isDoneStr)
+	if err != nil {
+		fmt.Println("is_done is not bool")
+		isDoneExist = false
+	}
+
 	// Get tasks in DB
 	var tasks []database.Task
-	err = db.Select(&tasks, "SELECT * FROM tasks") // Use DB#Select for multiple entries
+	switch {
+	case kw != "" && isDoneExist:
+		err = db.Select(&tasks, "SELECT * FROM tasks WHERE title LIKE ? AND is_done = ?", "%"+kw+"%", isDone)
+	case kw != "":
+		err = db.Select(&tasks, "SELECT * FROM tasks WHERE title LIKE ?", "%"+kw+"%")
+	case isDoneExist:
+		err = db.Select(&tasks, "SELECT * FROM tasks WHERE is_done = ?", isDone)
+	default:
+		err = db.Select(&tasks, "SELECT * FROM tasks")
+	}
 	if err != nil {
 		Error(http.StatusInternalServerError, err.Error())(ctx)
 		return
@@ -169,15 +191,12 @@ func UpdateTask(ctx *gin.Context) {
 }
 
 func DeleteTask(ctx *gin.Context) {
-	fmt.Println("DeleteTask")
 	//IDを取得
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		Error(http.StatusBadRequest, err.Error())(ctx)
 		return
 	}
-
-	fmt.Println("A")
 
 	//DB接続
 	db, err := database.GetConnection()
@@ -186,16 +205,12 @@ func DeleteTask(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("B")
-
 	//Taskの削除
 	_, err = db.Exec("DELETE FROM tasks WHERE id=?", id)
 	if err != nil {
 		Error(http.StatusInternalServerError, err.Error())(ctx)
 		return
 	}
-
-	fmt.Println("C")
 
 	//リダイレクト処理
 	path := "/list"
