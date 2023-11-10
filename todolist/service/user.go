@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"net/http"
 	database "todolist.go/db"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,12 +16,23 @@ func NewUserForm(ctx *gin.Context) {
 func RegisterUser(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
+	passwordConfirm := ctx.PostForm("password_confirm")
 	switch {
 	case username == "":
+		//ユーザー名が入力されていない場合
 		ctx.HTML(http.StatusBadRequest, "new_user_form.html", gin.H{"Title": "Register user", "Error": "Usernane is not provided", "Username": username})
 		return
 	case password == "":
+		//パスワードが入力されていない場合
 		ctx.HTML(http.StatusBadRequest, "new_user_form.html", gin.H{"Title": "Register user", "Error": "Password is not provided", "Password": password})
+		return
+	case password != passwordConfirm:
+		//パスワードが一致しない場合
+		ctx.HTML(http.StatusBadRequest, "new_user_form.html", gin.H{"Title": "Register user", "Error": "Password does not match", "Username": username, "Password": password})
+		return
+	case utf8.RuneCountInString(password) < 8:
+		//パスワードが8文字未満の場合
+		ctx.HTML(http.StatusBadRequest, "new_user_form.html", gin.H{"Title": "Register user", "Error": "Password must be at least 8 characters", "Username": username, "Password": password})
 		return
 	}
 

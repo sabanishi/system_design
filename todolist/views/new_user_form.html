@@ -6,9 +6,12 @@
 <form action="/user/new" method="POST">
     <label>ユーザ名: </label><input type="text" name="username" required><br>
     <label>パスワード: </label><input type="text" name="password" required><br>
+    <label>パスワード(確認)</label><input type="text" name="password_confirm" required><br>
     <input type="submit" value="登録">
     <a href="/">
         <button type="button">戻る</button>
     </a>
 </form>
+<br>
+<label>パスワードは8文字以上にしてください</label>
 {{ template "footer" }}
