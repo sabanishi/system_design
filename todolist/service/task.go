@@ -92,3 +92,78 @@ func RegisterTask(ctx *gin.Context) {
 	}
 	ctx.Redirect(http.StatusFound, path)
 }
+
+func EditTaskForm(ctx *gin.Context) {
+	//IDを取得
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		Error(http.StatusBadRequest, err.Error())(ctx)
+		return
+	}
+
+	db, err := database.GetConnection()
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//Taskの取得
+	var task database.Task
+	err = db.Get(&task, "SELECT * FROM tasks WHERE id=?", id)
+	if err != nil {
+		Error(http.StatusBadRequest, err.Error())(ctx)
+		return
+	}
+
+	ctx.HTML(http.StatusOK, "form_edit_task.html", gin.H{"Title": fmt.Sprintf("Edit task %d", task.ID), "Task": task})
+}
+
+func UpdateTask(ctx *gin.Context) {
+	//POSTされたデータを取得
+	title, exist := ctx.GetPostForm("title")
+	if !exist {
+		Error(http.StatusBadRequest, "title is not exist")(ctx)
+		return
+	}
+	description, exist := ctx.GetPostForm("description")
+	if !exist {
+		Error(http.StatusBadRequest, "description is not exist")(ctx)
+		return
+	}
+	isDoneStr, exist := ctx.GetPostForm("is_done")
+	if !exist {
+		Error(http.StatusBadRequest, "is_done is not exist")(ctx)
+		return
+	}
+	//isDoneをbool型に変換
+	isDone, err := strconv.ParseBool(isDoneStr)
+	if err != nil {
+		Error(http.StatusBadRequest, err.Error())(ctx)
+		return
+	}
+
+	//IDを取得
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		Error(http.StatusBadRequest, err.Error())(ctx)
+		return
+	}
+
+	//DB接続
+	db, err := database.GetConnection()
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//Taskの更新
+	_, err = db.Exec("UPDATE tasks SET title=?, description=?, is_done=? WHERE id=?", title, description, isDone, id)
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//リダイレクト処理
+	path := fmt.Sprintf("/task/%d", id)
+	ctx.Redirect(http.StatusFound, path)
+}

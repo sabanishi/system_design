@@ -39,8 +39,8 @@ func main() {
 	//タスクの追加/編集/削除
 	engine.GET("/task/new", service.NewTaskForm)
 	engine.POST("/task/new", service.RegisterTask)
-	engine.GET("/task/edit/:id", service.NotImplemented)
-	engine.POST("/task/edit/:id", service.NotImplemented)
+	engine.GET("/task/edit/:id", service.EditTaskForm)
+	engine.POST("/task/edit/:id", service.UpdateTask)
 	engine.POST("/task/delete/:id", service.NotImplemented)
 
 	// start server
