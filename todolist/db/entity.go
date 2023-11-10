@@ -7,9 +7,9 @@ import (
 
 // Task corresponds to a row in `tasks` table
 type Task struct {
-	ID        uint64    `db:"id"`
-	Title     string    `db:"title"`
-	CreatedAt time.Time `db:"created_at"`
-	IsDone    bool      `db:"is_done"`
-	Explain   string    `db:"explain"`
+	ID          uint64    `db:"id"`
+	Title       string    `db:"title"`
+	CreatedAt   time.Time `db:"created_at"`
+	IsDone      bool      `db:"is_done"`
+	Description string    `db:"description"`
 }
