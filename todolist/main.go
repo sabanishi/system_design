@@ -8,6 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+
 	"todolist.go/db"
 	"todolist.go/service"
 )
@@ -30,22 +33,38 @@ func main() {
 	engine := gin.Default()
 	engine.LoadHTMLGlob("views/*.html")
 
+	//セッションの準備
+	store := cookie.NewStore([]byte("m-secret"))
+	engine.Use(sessions.Sessions("user-session", store))
+
 	// routing
 	engine.Static("/assets", "./assets")
 	engine.GET("/", service.Home)
-	engine.GET("/list", service.TaskList)
-	engine.GET("/task/:id", service.ShowTask) // ":id" is a parameter
 
-	//タスクの追加/編集/削除
-	engine.GET("/task/new", service.NewTaskForm)
-	engine.POST("/task/new", service.RegisterTask)
-	engine.GET("/task/edit/:id", service.EditTaskForm)
-	engine.POST("/task/edit/:id", service.UpdateTask)
-	engine.GET("/task/delete/:id", service.DeleteTask)
+	engine.GET("/list", service.LoginCheck, service.TaskList)
+
+	//ログアウト
+	engine.POST("/list", service.LoginCheck, service.Logout)
+
+	taskGroup := engine.Group("/task")
+	taskGroup.Use(service.LoginCheck)
+	{
+		taskGroup.GET("/:id", service.ShowTask) // ":id" is a parameter
+
+		//タスクの追加/編集/削除
+		taskGroup.GET("/new", service.NewTaskForm)
+		taskGroup.POST("/new", service.RegisterTask)
+		taskGroup.GET("/edit/:id", service.EditTaskForm)
+		taskGroup.POST("/edit/:id", service.UpdateTask)
+		taskGroup.GET("/delete/:id", service.DeleteTask)
+	}
 
 	//ユーザー登録
 	engine.GET("/user/new", service.NewUserForm)
 	engine.POST("/user/new", service.RegisterUser)
+
+	engine.GET("/login", service.LoginForm)
+	engine.POST("/login", service.Login)
 
 	// start server
 	engine.Run(fmt.Sprintf(":%d", port))
