@@ -15,26 +15,27 @@
     </tr>
     <tr>
         <td>ID</td>
-        <th>{{.ID}}</th>
+        <th id = "id">{{.ID}}</th>
     </tr>
     <tr>
         <td>Created at</td>
-        <th>{{.CreatedAt}}</th>
+        <th id = "date">{{.CreatedAt.Format "2006/1/2 15:04:05"}}</th>
     </tr>
     <tr>
         <td>Status</td>
-        <th><input type="checkbox" {{ if .IsDone }}checked {{ end }}disabled/>
-            <label for="scales">済</label></th>
+        <th id = "status">{{ if .IsDone }}済{{ else }}未{{ end }}</th>
     </tr>
     <tr>
         <td>Description:</td>
-        <th>{{.Description}}</th>
+        <th id = "description">{{.Description}}</th>
     </tr>
 </table>
 
 <a href="/list">
     <button type="button">リストへ戻る</button>
 </a>
+
+<br>
 
 <button type="button" onclick="confirm_update({{.ID}})">編集</button>
 <button type="button" onclick="confirm_delete({{.ID}})">削除</button>
