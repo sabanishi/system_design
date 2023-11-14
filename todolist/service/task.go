@@ -154,6 +154,16 @@ func RegisterTask(ctx *gin.Context) {
 		Error(http.StatusBadRequest, "description is not exist")(ctx)
 		return
 	}
+	priority, exist := ctx.GetPostForm("priority")
+	if !exist {
+		Error(http.StatusBadRequest, "priority is not exist")(ctx)
+		return
+	}
+	deadline, exist := ctx.GetPostForm("deadline")
+	if !exist {
+		Error(http.StatusBadRequest, "deadline is not exist")(ctx)
+		return
+	}
 
 	//DB接続
 	db, err := database.GetConnection()
@@ -162,7 +172,8 @@ func RegisterTask(ctx *gin.Context) {
 		return
 	}
 	tx := db.MustBegin()
-	result, err := tx.Exec("INSERT INTO tasks (title,description) VALUES (?,?)", title, description)
+	result, err := tx.Exec("INSERT INTO tasks (title,description,priority,deadline) VALUES (?,?,?,?)",
+		title, description, priority, deadline)
 	if err != nil {
 		tx.Rollback()
 		Error(http.StatusInternalServerError, err.Error())(ctx)
