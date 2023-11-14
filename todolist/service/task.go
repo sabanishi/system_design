@@ -104,7 +104,7 @@ func ShowTask(ctx *gin.Context) {
 	var task database.Task
 
 	query :=
-		"SELECT id, title, created_at, is_done, description " +
+		"SELECT id, title, created_at, is_done, description,priority,deadline " +
 			"FROM tasks " +
 			"INNER JOIN ownership ON task_id = id " +
 			"WHERE owner_id = ?"
@@ -125,7 +125,18 @@ func ShowTask(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println(len(owners))
+	//優先度の表示
+	var priority string
+	switch task.Priority {
+	case 0:
+		priority = "低"
+	case 1:
+		priority = "中"
+	case 2:
+		priority = "高"
+	}
+
+	fmt.Println(task.Deadline)
 
 	// Render task
 	ctx.HTML(http.StatusOK, "task.html",
@@ -134,6 +145,8 @@ func ShowTask(ctx *gin.Context) {
 			"CreatedAt":   task.CreatedAt,
 			"IsDone":      task.IsDone,
 			"Description": task.Description,
+			"Priority":    priority,
+			"Deadline":    task.Deadline,
 			"Owners":      owners})
 }
 
@@ -218,6 +231,8 @@ func EditTaskForm(ctx *gin.Context) {
 		return
 	}
 
+	fmt.Println(task.Deadline)
+
 	ctx.HTML(http.StatusOK, "form_edit_task.html", gin.H{"Title": fmt.Sprintf("Edit task %d", task.ID), "Task": task})
 }
 
@@ -244,6 +259,16 @@ func UpdateTask(ctx *gin.Context) {
 		Error(http.StatusBadRequest, err.Error())(ctx)
 		return
 	}
+	priority, exist := ctx.GetPostForm("priority")
+	if !exist {
+		Error(http.StatusBadRequest, "priority is not exist")(ctx)
+		return
+	}
+	deadline, exist := ctx.GetPostForm("deadline")
+	if !exist {
+		Error(http.StatusBadRequest, "deadline is not exist")(ctx)
+		return
+	}
 
 	//IDを取得
 	id, err := strconv.Atoi(ctx.Param("id"))
@@ -260,7 +285,9 @@ func UpdateTask(ctx *gin.Context) {
 	}
 
 	//Taskの更新
-	_, err = db.Exec("UPDATE tasks SET title=?, description=?, is_done=? WHERE id=?", title, description, isDone, id)
+	_, err = db.Exec("UPDATE tasks SET title=?, description=?, is_done=?, priority=?,deadline=? "+
+		"WHERE id=?",
+		title, description, isDone, priority, deadline, id)
 	if err != nil {
 		Error(http.StatusInternalServerError, err.Error())(ctx)
 		return

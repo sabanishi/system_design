@@ -7,6 +7,16 @@
     <input type="radio" name="is_done" value="f" {{ if not .Task.IsDone }}checked{{ end }}><label>未完了</label>
     </br>
     <label>Description</label><textarea name="description">{{.Task.Description}}</textarea>
+    <br>
+    <label>Priority</label>
+    <select name="priority">
+        <option value=0 {{ if eq .Task.Priority 1 }}selected{{ end }}>低</option>
+        <option value=1 {{ if eq .Task.Priority 2 }}selected{{ end }}>中</option>
+        <option value=2 {{ if eq .Task.Priority 3 }}selected{{ end }}>高</option>
+    </select>
+    <br>
+    <label>Deadline</label><input type="date" name="deadline" value="{{ .Task.Deadline.Format "2006-01-02" }}">
+    <br>
     <input type="submit" value="登録">
     <a href="/task/{{ .Task.ID }}">
         <button type="button">戻る</button>
