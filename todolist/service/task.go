@@ -42,7 +42,7 @@ func TaskList(ctx *gin.Context) {
 	// Get tasks in DB
 	var tasks []database.Task
 	query :=
-		"SELECT id, title, created_at, is_done, description " +
+		"SELECT id, title, created_at, is_done, description, priority, deadline " +
 			"FROM tasks " +
 			"INNER JOIN ownership ON task_id = id " +
 			"WHERE owner_id = ?"
@@ -136,18 +136,21 @@ func ShowTask(ctx *gin.Context) {
 		priority = "高"
 	}
 
-	fmt.Println(task.Deadline)
+	var remainingDays int
+	remainingDays = int(task.Deadline.Sub(task.CreatedAt).Hours()/24) + 1
+	var remainingDaysStr = strconv.Itoa(remainingDays) + "日"
 
 	// Render task
 	ctx.HTML(http.StatusOK, "task.html",
 		gin.H{"Title": task.Title,
-			"ID":          task.ID,
-			"CreatedAt":   task.CreatedAt,
-			"IsDone":      task.IsDone,
-			"Description": task.Description,
-			"Priority":    priority,
-			"Deadline":    task.Deadline,
-			"Owners":      owners})
+			"ID":            task.ID,
+			"CreatedAt":     task.CreatedAt,
+			"IsDone":        task.IsDone,
+			"Description":   task.Description,
+			"Priority":      priority,
+			"Deadline":      task.Deadline,
+			"RemainingDays": remainingDaysStr,
+			"Owners":        owners})
 }
 
 func NewTaskForm(ctx *gin.Context) {

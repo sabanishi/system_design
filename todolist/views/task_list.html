@@ -27,13 +27,34 @@
             <th>タイトル</th>
             <th>登録日</th>
             <th>状態</th>
+            <th>優先度</th>
         </tr>
         {{ range $task := .Tasks }}
             <tr>
-                <td id = "id"><a href="/task/{{ $task.ID }}">{{ $task.ID }}</a></td>
-                <td id = "title">{{ $task.Title }}</td>
-                <td id = "date"><time>{{ $task.CreatedAt.Format "2006/1/2 15:04:05" }}</time></td>
-                <td id = "status">{{ if $task.IsDone }}済{{ else }}未{{ end }}</td>
+                <td id="id"><a href="/task/{{ $task.ID }}">{{ $task.ID }}</a></td>
+                <td id="title">{{ $task.Title }}</td>
+                <td id="date">
+                    <time>{{ $task.CreatedAt.Format "2006/1/2 15:04:05" }}</time>
+                </td>
+                <td id="status">{{ if $task.IsDone }}済{{ else }}未{{ end }}</td>
+                <td id="priority">　
+                    <font color="
+                    {{ if eq $task.Priority 1 }}
+                        #ff6666;
+                    {{ else if eq $task.Priority 2 }}
+                        #ff0000;
+                        {{ else }}
+                        #000000;
+                    {{ end }}">
+                        {{ if eq $task.Priority 0 }}
+                            低
+                        {{ else if eq $task.Priority 1 }}
+                            中
+                        {{ else if eq $task.Priority 2 }}
+                            高
+                        {{ end }}
+                    </font>
+                </td>
             </tr>
         {{ end }}
     </table>
@@ -70,5 +91,4 @@
 <form action="/delete" method="POST">
     <input type="submit" value="退会">
 </form>
-
 {{ template "footer" }}

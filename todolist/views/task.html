@@ -26,17 +26,21 @@
         <th id = "status">{{ if .IsDone }}済{{ else }}未{{ end }}</th>
     </tr>
     <tr>
-        <td>Description:</td>
+        <td>説明</td>
         <th id = "description">{{.Description}}</th>
     </tr>
     <tr>
-        <td>Priority:</td>
+        <td>優先度</td>
         <th id = "priority">{{.Priority}}</th>
     </tr>
     <tr>
-        <td>Deadline:</td>
+        <td>締切</td>
         <th id = "deadline">{{.Deadline.Format "2006/1/2"}}</th>
     <tr>
+    <tr>
+        <td>残り日数</td>
+        <th id = "remaining_days">{{.RemainingDays}}</th>
+    </tr>
         <td>Owners:</td>
         <th id="owner">
             {{ range $owner := .Owners }}

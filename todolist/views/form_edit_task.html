@@ -10,9 +10,9 @@
     <br>
     <label>Priority</label>
     <select name="priority">
-        <option value=0 {{ if eq .Task.Priority 1 }}selected{{ end }}>低</option>
-        <option value=1 {{ if eq .Task.Priority 2 }}selected{{ end }}>中</option>
-        <option value=2 {{ if eq .Task.Priority 3 }}selected{{ end }}>高</option>
+        <option value=0 {{ if eq .Task.Priority 0 }}selected{{ end }}>低</option>
+        <option value=1 {{ if eq .Task.Priority 1 }}selected{{ end }}>中</option>
+        <option value=2 {{ if eq .Task.Priority 2 }}selected{{ end }}>高</option>
     </select>
     <br>
     <label>Deadline</label><input type="date" name="deadline" value="{{ .Task.Deadline.Format "2006-01-02" }}">
