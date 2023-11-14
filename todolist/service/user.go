@@ -16,7 +16,7 @@ import (
 const userkey = "user"
 
 func NewUserForm(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "new_user_form.html", gin.H{"Title": "Register user"})
+	ctx.HTML(http.StatusOK, "form_new_user.html", gin.H{"Title": "Register user"})
 }
 
 func RegisterUser(ctx *gin.Context) {
@@ -26,19 +26,19 @@ func RegisterUser(ctx *gin.Context) {
 	switch {
 	case username == "":
 		//ユーザー名が入力されていない場合
-		ctx.HTML(http.StatusBadRequest, "new_user_form.html", gin.H{"Title": "Register user", "Error": "Usernane is not provided", "Username": username})
+		ctx.HTML(http.StatusBadRequest, "form_new_user.html", gin.H{"Title": "Register user", "Error": "Usernane is not provided", "Username": username})
 		return
 	case password == "":
 		//パスワードが入力されていない場合
-		ctx.HTML(http.StatusBadRequest, "new_user_form.html", gin.H{"Title": "Register user", "Error": "Password is not provided", "Password": password})
+		ctx.HTML(http.StatusBadRequest, "form_new_user.html", gin.H{"Title": "Register user", "Error": "Password is not provided", "Password": password})
 		return
 	case password != passwordConfirm:
 		//パスワードが一致しない場合
-		ctx.HTML(http.StatusBadRequest, "new_user_form.html", gin.H{"Title": "Register user", "Error": "Password does not match", "Username": username, "Password": password})
+		ctx.HTML(http.StatusBadRequest, "form_new_user.html", gin.H{"Title": "Register user", "Error": "Password does not match", "Username": username, "Password": password})
 		return
 	case utf8.RuneCountInString(password) < 8:
 		//パスワードが8文字未満の場合
-		ctx.HTML(http.StatusBadRequest, "new_user_form.html", gin.H{"Title": "Register user", "Error": "Password must be at least 8 characters", "Username": username, "Password": password})
+		ctx.HTML(http.StatusBadRequest, "form_new_user.html", gin.H{"Title": "Register user", "Error": "Password must be at least 8 characters", "Username": username, "Password": password})
 		return
 	}
 

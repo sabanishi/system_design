@@ -3,10 +3,36 @@
 {{ if .Error }}
     <p><font color="#FF0000">{{ .Error }}</font></p>
 {{ end }}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <title>Form</title>
+</head>
 <form action="/login" method="POST">
     <label>ユーザ名: </label><input type="text" name="username" value="{{ .Username }}" required><br>
-    <label>パスワード: </label><input type="password" name="password" required></br>
+    <label>パスワード: </label>
+    <input type="password" name="password" required>
+    <i id = "eye" class="fa-regular fa-eye-slash"></i>
+    </br>
     <input type="submit" value="ログイン">
 </form>
 <p><a href="/user/new">ユーザ登録</a></p>
 {{ template "footer" }}
+
+<script type="text/javascript">
+    let eye = document.getElementById('eye');
+    eye.addEventListener('click', function () {
+        if (this.previousElementSibling.getAttribute('type') == 'password') {
+            this.previousElementSibling.setAttribute('type', 'text');
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        } else {
+            this.previousElementSibling.setAttribute('type', 'password');
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        }
+    })
+</script>

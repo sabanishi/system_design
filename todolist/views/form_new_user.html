@@ -1,4 +1,5 @@
 {{ template "header" . }}
+<h1>ユーザ登録</h1>
 {{ if .Error }}
 <p><font color="#FF0000">{{ .Error }}</font>
 <p>
@@ -11,18 +12,17 @@
               crossorigin="anonymous" referrerpolicy="no-referrer"/>
         <title>Form</title>
     </head>
-<form action="/user/edit" method="POST">
-    <label>ユーザ名: </label><input type="text" name="username" required value= {{.Username}}><br>
+<form action="/user/new" method="POST">
+    <label>ユーザ名: </label><input type="text" name="username" required><br>
     <label>パスワード: </label>
     <input type="password" name="password" required>
     <i id = "eye" class="fa-regular fa-eye-slash"></i>
     <br>
-    <label>パスワード(確認)</label>
-    <input type="password" name="password_confirm" required>
+    <label>パスワード(確認)</label><input type="password" name="password_confirm" required>
     <i id = "eye2" class="fa-regular fa-eye-slash"></i>
     <br>
     <input type="submit" value="登録">
-    <a href="/list">
+    <a href="/">
         <button type="button">戻る</button>
     </a>
 </form>
@@ -33,11 +33,11 @@
 <script type="text/javascript">
     let eye = document.getElementById('eye');
     eye.addEventListener('click', function () {
-        if (this.previousElementSibling.getAttribute('type') == 'password') {
+        if(this.previousElementSibling.getAttribute('type') == 'password') {
             this.previousElementSibling.setAttribute('type', 'text');
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
-        } else {
+        }else{
             this.previousElementSibling.setAttribute('type', 'password');
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
