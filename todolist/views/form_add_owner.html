@@ -1,0 +1,14 @@
+{{ template "header" . }}
+<h1>Task {{ .Task.ID }}: edit</h1>
+{{ if .Error }}
+    <p><font color="#FF0000">{{ .Error }}</font><p>
+{{ end }}
+<form action="/task/add_owner/{{ .Task.ID }}" method="POST">
+    <label>ユーザー名</label><input type="text" name="username" value="" required>
+    <br>
+    <input type="submit" value="追加">
+    <a href="/task/{{ .Task.ID }}">
+        <button type="button">戻る</button>
+    </a>
+</form>
+{{ template "footer" }}

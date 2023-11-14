@@ -9,7 +9,7 @@ th{
 }
 
 /* 各要素の最大幅を指定 */
-#id, #title, #date, #status, #description{
+#id, #title, #date, #status, #description, #owner{
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

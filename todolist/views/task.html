@@ -29,6 +29,14 @@
         <td>Description:</td>
         <th id = "description">{{.Description}}</th>
     </tr>
+    <tr>
+        <td>Owners:</td>
+        <th id="owner">
+            {{ range $owner := .Owners }}
+                {{$owner.Name }}<br>
+            {{ end }}
+        </th>
+    </tr>
 </table>
 
 <a href="/list">
@@ -39,6 +47,7 @@
 
 <button type="button" onclick="confirm_update({{.ID}})">編集</button>
 <button type="button" onclick="confirm_delete({{.ID}})">削除</button>
+<button type="button" onclick="confirm_add_owner({{.ID}})">アクセス権付与</button>
 
 <script type="text/javascript">
     //タスクの削除を行うか確認する
@@ -52,6 +61,13 @@
     const confirm_update = (id) =>{
         if(window.confirm(`Task ${id}を編集しますか？`)){
             location.href = `/task/edit/${id}`;
+        }
+    }
+
+    //アクセス権の付与を行うか確認する
+    const confirm_add_owner = (id) =>{
+        if(window.confirm(`Task ${id}にアクセス権を付与しますか？`)){
+            location.href = `/task/add_owner/${id}`;
         }
     }
 </script>

@@ -41,7 +41,11 @@ func TaskList(ctx *gin.Context) {
 
 	// Get tasks in DB
 	var tasks []database.Task
-	query := "SELECT id, title, created_at, is_done, description FROM tasks INNER JOIN ownership ON task_id = id WHERE user_id = ?"
+	query :=
+		"SELECT id, title, created_at, is_done, description " +
+			"FROM tasks " +
+			"INNER JOIN ownership ON task_id = id " +
+			"WHERE owner_id = ?"
 	switch {
 	case kw != "" && isDoneExist:
 		err = db.Select(&tasks, query+"AND title LIKE ? AND is_done = ?", userID, "%"+kw+"%", isDone)
@@ -103,15 +107,34 @@ func ShowTask(ctx *gin.Context) {
 		"SELECT id, title, created_at, is_done, description " +
 			"FROM tasks " +
 			"INNER JOIN ownership ON task_id = id " +
-			"WHERE user_id = ?"
+			"WHERE owner_id = ?"
 	err = db.Get(&task, query+" AND tasks.id = ?", userID, id) // Use DB#Get for one entry
 	if err != nil {
 		Error(http.StatusBadRequest, err.Error())(ctx)
 		return
 	}
 
+	var owners []database.User
+	err = db.Select(&owners,
+		"SELECT id,name "+
+			"FROM ownership "+
+			"INNER JOIN users ON owner_id = id "+
+			"WHERE task_id = ?", id)
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	fmt.Println(len(owners))
+
 	// Render task
-	ctx.HTML(http.StatusOK, "task.html", task)
+	ctx.HTML(http.StatusOK, "task.html",
+		gin.H{"Title": task.Title,
+			"ID":          task.ID,
+			"CreatedAt":   task.CreatedAt,
+			"IsDone":      task.IsDone,
+			"Description": task.Description,
+			"Owners":      owners})
 }
 
 func NewTaskForm(ctx *gin.Context) {
@@ -151,7 +174,7 @@ func RegisterTask(ctx *gin.Context) {
 		Error(http.StatusInternalServerError, err.Error())(ctx)
 		return
 	}
-	_, err = tx.Exec("INSERT INTO ownership (user_id, task_id) VALUES (?,?)", userID, taskID)
+	_, err = tx.Exec("INSERT INTO ownership (owner_id, task_id) VALUES (?,?)", userID, taskID)
 	if err != nil {
 		tx.Rollback()
 		Error(http.StatusInternalServerError, err.Error())(ctx)
@@ -261,5 +284,116 @@ func DeleteTask(ctx *gin.Context) {
 
 	//リダイレクト処理
 	path := "/list"
+	ctx.Redirect(http.StatusFound, path)
+}
+
+func AddOwnerForm(ctx *gin.Context) {
+	//IDを取得
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		Error(http.StatusBadRequest, err.Error())(ctx)
+		return
+	}
+
+	//DB接続
+	db, err := database.GetConnection()
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//Taskの取得
+	var task database.Task
+	err = db.Get(&task, "SELECT * FROM tasks WHERE id=?", id)
+	if err != nil {
+		Error(http.StatusBadRequest, err.Error())(ctx)
+		return
+	}
+
+	ctx.HTML(http.StatusOK, "form_add_owner.html", gin.H{"Title": fmt.Sprintf("Add owner to task %d", task.ID), "Task": task})
+}
+
+func AddOwner(ctx *gin.Context) {
+	//IDを取得
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		Error(http.StatusBadRequest, err.Error())(ctx)
+		return
+	}
+	//DB接続
+	db, err := database.GetConnection()
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+	//Taskの取得
+	var task database.Task
+	err = db.Get(&task, "SELECT * FROM tasks WHERE id=?", id)
+	if err != nil {
+		Error(http.StatusBadRequest, err.Error())(ctx)
+		return
+	}
+
+	//POSTされたデータを取得
+	username := ctx.PostForm("username")
+	if username == "" {
+		ctx.HTML(http.StatusBadRequest, "form_add_owner.html",
+			gin.H{"Title": fmt.Sprintf("Add owner to task %d", task.ID),
+				"Task":  task,
+				"Error": "Usernane is not provided"})
+		return
+	}
+
+	//指定されたユーザーが存在するか確認する
+	var duplicate int
+	err = db.Get(&duplicate, "SELECT COUNT(*) FROM users WHERE name=?", username)
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+	if duplicate == 0 {
+		//ユーザーが存在しない場合
+		ctx.HTML(http.StatusBadRequest, "form_add_owner.html",
+			gin.H{"Title": fmt.Sprintf("Add owner to task %d", task.ID),
+				"Task":  task,
+				"Error": "This user is not exist"})
+		return
+	}
+
+	//既にアクセス権が付与されているか確認する
+	var exist int
+	err = db.Get(&exist,
+		"SELECT COUNT(*) "+
+			"FROM ownership WHERE owner_id=(SELECT id FROM users WHERE name=?) AND task_id=?", username, id)
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+	if exist > 0 {
+		//既にアクセス権が付与されている場合
+		ctx.HTML(http.StatusBadRequest, "form_add_owner.html",
+			gin.H{"Title": fmt.Sprintf("Add owner to task %d", task.ID),
+				"Task":  task,
+				"Error": "This user already has access to this task"})
+		return
+	}
+
+	//ユーザー名からユーザーIDを取得する
+	var userID int
+	err = db.Get(&userID, "SELECT id FROM users WHERE name=?", username)
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//Ownershipの追加
+	_, err = db.Exec("INSERT INTO ownership (owner_id, task_id) VALUES (?,?)", userID, id)
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//リダイレクト処理
+	path := fmt.Sprintf("/task/%d", id)
 	ctx.Redirect(http.StatusFound, path)
 }

@@ -60,6 +60,9 @@ func main() {
 		taskGroup.GET("/edit/:id", service.EditTaskForm)
 		taskGroup.POST("/edit/:id", service.UpdateTask)
 		taskGroup.GET("/delete/:id", service.DeleteTask)
+		//タスクへのアクセス権付与
+		taskGroup.GET("/add_owner/:id", service.AddOwnerForm)
+		taskGroup.POST("add_owner/:id", service.AddOwner)
 	}
 
 	//ユーザー登録
