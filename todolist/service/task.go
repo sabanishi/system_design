@@ -21,6 +21,12 @@ func TaskList(ctx *gin.Context) {
 		return
 	}
 
+	// parse page given as a parameter
+	page, err := strconv.Atoi(ctx.Param("page"))
+	if err != nil {
+		page = 1
+	}
+
 	kw := ctx.Query("kw")
 
 	//終了状態を取得
@@ -30,7 +36,6 @@ func TaskList(ctx *gin.Context) {
 	//isDoneをbool型に変換
 	isDone, err := strconv.ParseBool(isDoneStr)
 	if err != nil {
-		fmt.Println("is_done is not bool")
 		isDoneExist = false
 	}
 
@@ -52,8 +57,25 @@ func TaskList(ctx *gin.Context) {
 		return
 	}
 
+	//表示するページを制限する
+	var taskPage []database.Task
+	var hasBeforePage = page > 1
+	var hasAfterPage = len(tasks) > page*10
+	for i := 0; i < len(tasks); i++ {
+		if i >= (page-1)*10 && i < page*10 {
+			taskPage = append(taskPage, tasks[i])
+		}
+	}
+
 	// Render tasks
-	ctx.HTML(http.StatusOK, "task_list.html", gin.H{"Title": "Task list", "Tasks": tasks})
+	ctx.HTML(http.StatusOK, "task_list.html", gin.H{
+		"Title":         "Task list",
+		"Page":          page,
+		"HasBeforePage": hasBeforePage,
+		"HasAfterPage":  hasAfterPage,
+		"BeforePage":    page - 1,
+		"AfterPage":     page + 1,
+		"Tasks":         taskPage})
 }
 
 // ShowTask renders a task with given ID

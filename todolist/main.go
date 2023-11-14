@@ -42,6 +42,7 @@ func main() {
 	engine.GET("/", service.Home)
 
 	engine.GET("/list", service.LoginCheck, service.TaskList)
+	engine.GET("/list/:page", service.LoginCheck, service.TaskList)
 
 	//ログアウト
 	engine.POST("/logout", service.LoginCheck, service.Logout)

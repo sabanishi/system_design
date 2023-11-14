@@ -38,6 +38,32 @@
         {{ end }}
     </table>
 {{ end }}
+
+<br>
+
+<div class="field">
+    <div class="center">
+        {{if .HasBeforePage}}
+            <form action="/list/{{.BeforePage}}" method="GET">
+                <input type="submit" value="前">
+            </form>
+        {{end}}
+    </div>
+    <div class="center">
+        <text>ページ番号:{{.Page}}</text>
+    </div>
+    <div class="center">
+        {{if .HasAfterPage}}
+            <form action="/list/{{.AfterPage}}" method="GET">
+                <input type="submit" value="次">
+            </form>
+        {{end}}
+    </div>
+</div>
+
+
+<br>
+
 <form action="/logout" method="POST">
     <input type="submit" value="ログアウト">
 </form>

@@ -30,3 +30,7 @@ th,td{
 .right{
     text-align: right;
 }
+
+.field{
+    display: flex;
+}
