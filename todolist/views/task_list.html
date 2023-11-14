@@ -85,10 +85,15 @@
 
 <br>
 
-<form action="/logout" method="POST">
-    <input type="submit" value="ログアウト">
-</form>
-<form action="/delete" method="POST">
-    <input type="submit" value="退会">
-</form>
+<div class="field">
+    <form action="/logout" method="POST">
+        <input type="submit" value="ログアウト">
+    </form>
+    <form action="user/edit" method="GET">
+        <input type="submit" value="ユーザー情報変更">
+    </form>
+    <form action="/delete" method="POST">
+        <input type="submit" value="退会">
+    </form>
+</div>
 {{ template "footer" }}

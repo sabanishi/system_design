@@ -69,6 +69,10 @@ func main() {
 	engine.GET("/user/new", service.NewUserForm)
 	engine.POST("/user/new", service.RegisterUser)
 
+	//ユーザー情報変更
+	engine.GET("/user/edit", service.LoginCheck, service.EditUserForm)
+	engine.POST("/user/edit", service.LoginCheck, service.UpdateUser)
+
 	engine.GET("/login", service.LoginForm)
 	engine.POST("/login", service.Login)
 

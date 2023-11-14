@@ -1,0 +1,16 @@
+{{ template "header" . }}
+{{ if .Error }}
+    <p><font color="#FF0000">{{ .Error }}</font><p>
+{{ end }}
+<form action="/user/edit" method="POST">
+    <label>ユーザ名: </label><input type="text" name="username" required value = {{.Username}}><br>
+    <label>パスワード: </label><input type="text" name="password" required><br>
+    <label>パスワード(確認)</label><input type="text" name="password_confirm" required><br>
+    <input type="submit" value="登録">
+    <a href="/list">
+        <button type="button">戻る</button>
+    </a>
+</form>
+<br>
+<label>パスワードは8文字以上にしてください</label>
+{{ template "footer" }}

@@ -79,7 +79,12 @@ func RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, user)
+	//ログイン状態にする
+	session := sessions.Default(ctx)
+	session.Set(userkey, user.ID)
+	session.Save()
+
+	ctx.Redirect(http.StatusFound, "/list")
 }
 
 func hash(pw string) []byte {
@@ -130,7 +135,6 @@ func Login(ctx *gin.Context) {
 	session.Set(userkey, user.ID)
 	session.Save()
 
-	fmt.Println("Login success")
 	ctx.Redirect(http.StatusFound, "/list")
 }
 
@@ -171,4 +175,71 @@ func DeleteUser(ctx *gin.Context) {
 
 	//ログアウトする
 	Logout(ctx)
+}
+
+func EditUserForm(ctx *gin.Context) {
+	//ユーザーIDを取得
+	userID := sessions.Default(ctx).Get("user")
+
+	//DB接続
+	db, err := database.GetConnection()
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//ユーザー情報を取得
+	var user database.User
+	err = db.Get(&user, "SELECT id,name,password,is_deleted FROM users WHERE id=?", userID)
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	ctx.HTML(http.StatusOK, "form_edit_user.html",
+		gin.H{"Title": "Edit user",
+			"Username": user.Name})
+}
+
+func UpdateUser(ctx *gin.Context) {
+	username := ctx.PostForm("username")
+	password := ctx.PostForm("password")
+	passwordConfirm := ctx.PostForm("password_confirm")
+	switch {
+	case username == "":
+		//ユーザー名が入力されていない場合
+		ctx.HTML(http.StatusBadRequest, "form_edit_user.html", gin.H{"Title": "Register user", "Error": "Usernane is not provided", "Username": username})
+		return
+	case password == "":
+		//パスワードが入力されていない場合
+		ctx.HTML(http.StatusBadRequest, "form_edit_user.html", gin.H{"Title": "Register user", "Error": "Password is not provided", "Username": username})
+		return
+	case password != passwordConfirm:
+		//パスワードが一致しない場合
+		ctx.HTML(http.StatusBadRequest, "form_edit_user.html", gin.H{"Title": "Register user", "Error": "Password does not match", "Username": username})
+		return
+	case utf8.RuneCountInString(password) < 8:
+		//パスワードが8文字未満の場合
+		ctx.HTML(http.StatusBadRequest, "form_edit_user.html", gin.H{"Title": "Register user", "Error": "Password must be at least 8 characters", "Username": username})
+		return
+	}
+
+	//ユーザーIDを取得
+	userID := sessions.Default(ctx).Get("user")
+
+	//DB接続
+	db, err := database.GetConnection()
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//ユーザー情報を更新する
+	_, err = db.Exec("UPDATE users SET name=?,password=? WHERE id=?", username, hash(password), userID)
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	ctx.Redirect(http.StatusFound, "/list")
 }
