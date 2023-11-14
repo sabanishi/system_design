@@ -174,7 +174,7 @@ func DeleteUser(ctx *gin.Context) {
 	}
 
 	//ログアウトする
-	Logout(ctx)
+	ctx.Redirect(http.StatusFound, "/logout")
 }
 
 func EditUserForm(ctx *gin.Context) {

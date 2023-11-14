@@ -86,14 +86,31 @@
 <br>
 
 <div class="field">
-    <form action="/logout" method="POST">
-        <input type="submit" value="ログアウト">
-    </form>
-    <form action="user/edit" method="GET">
-        <input type="submit" value="ユーザー情報変更">
-    </form>
-    <form action="/delete" method="POST">
-        <input type="submit" value="退会">
-    </form>
+    <button type="button" onclick="confirm_logout()">ログアウト</button>
+    <button type="button" onclick="confirm_user_update()">ユーザー情報変更</button>
+    <button type="button" onclick="confirm_delete_user()">退会</button>
 </div>
 {{ template "footer" }}
+
+<script type="text/javascript">
+    //ログアウトを行うか確認する
+    const confirm_logout = () =>{
+        if(window.confirm(`ログアウトしますか？`)){
+            location.href = `/logout`;
+        }
+    }
+
+    //ユーザー情報の更新を行うか確認する
+    const confirm_user_update = () =>{
+        if(window.confirm(`ユーザー情報を変更しますか？`)){
+            location.href = `/user/edit`;
+        }
+    }
+
+    //退会するか確認する
+    const confirm_delete_user = () =>{
+        if(window.confirm(`退会しますか？`)){
+            location.href = `/user/delete`;
+        }
+    }
+</script>

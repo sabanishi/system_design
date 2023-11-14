@@ -45,9 +45,9 @@ func main() {
 	engine.GET("/list/:page", service.LoginCheck, service.TaskList)
 
 	//ログアウト
-	engine.POST("/logout", service.LoginCheck, service.Logout)
+	engine.GET("/logout", service.LoginCheck, service.Logout)
 	//退会
-	engine.POST("/delete", service.LoginCheck, service.DeleteUser)
+	engine.GET("/user/delete", service.LoginCheck, service.DeleteUser)
 
 	taskGroup := engine.Group("/task")
 	taskGroup.Use(service.LoginCheck)
