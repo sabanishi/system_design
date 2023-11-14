@@ -35,8 +35,11 @@
         {{ end }}
     </table>
 {{ end }}
-<form action="/list" method="POST">
+<form action="/logout" method="POST">
     <input type="submit" value="ログアウト">
+</form>
+<form action="/delete" method="POST">
+    <input type="submit" value="退会">
 </form>
 
 {{ template "footer" }}

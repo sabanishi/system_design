@@ -18,4 +18,5 @@ type User struct {
 	ID       uint64 `db:"id"`
 	Name     string `db:"name"`
 	Password []byte `db:"password"`
+	IsDelete bool   `db:"is_deleted"`
 }

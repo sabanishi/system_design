@@ -73,7 +73,7 @@ func RegisterUser(ctx *gin.Context) {
 	//保存状態を確認する
 	id, _ := result.LastInsertId()
 	var user database.User
-	err = db.Get(&user, "SELECT id, name, password FROM users WHERE id=?", id)
+	err = db.Get(&user, "SELECT id, name, password,is_deleted FROM users WHERE id=?", id)
 	if err != nil {
 		Error(http.StatusInternalServerError, err.Error())(ctx)
 		return
@@ -107,7 +107,7 @@ func Login(ctx *gin.Context) {
 
 	//ユーザー取得
 	var user database.User
-	err = db.Get(&user, "SELECT id,name,password FROM users WHERE name=?", username)
+	err = db.Get(&user, "SELECT id,name,password,is_deleted FROM users WHERE name=?", username)
 	if err != nil {
 		ctx.HTML(http.StatusBadRequest, "login.html", gin.H{"Title": "Login", "Username": username, "Error": "No such user"})
 		return
@@ -116,6 +116,12 @@ func Login(ctx *gin.Context) {
 	//パスワード照合
 	if hex.EncodeToString(user.Password) != hex.EncodeToString(hash(password)) {
 		ctx.HTML(http.StatusBadRequest, "login.html", gin.H{"Title": "Login", "Username": username, "Error": "Incorrect password"})
+		return
+	}
+
+	//退会済みか確認
+	if user.IsDelete {
+		ctx.HTML(http.StatusBadRequest, "login.html", gin.H{"Title": "Login", "Username": username, "Error": "This user is already deleted"})
 		return
 	}
 
@@ -144,4 +150,25 @@ func Logout(ctx *gin.Context) {
 	session.Options(sessions.Options{MaxAge: -1})
 	session.Save()
 	ctx.Redirect(http.StatusFound, "/")
+}
+
+func DeleteUser(ctx *gin.Context) {
+	userID := sessions.Default(ctx).Get("user")
+
+	//DB接続
+	db, err := database.GetConnection()
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//削除フラグをつける
+	_, err = db.Exec("UPDATE users SET is_deleted = true WHERE id=?", userID)
+	if err != nil {
+		Error(http.StatusInternalServerError, err.Error())(ctx)
+		return
+	}
+
+	//ログアウトする
+	Logout(ctx)
 }

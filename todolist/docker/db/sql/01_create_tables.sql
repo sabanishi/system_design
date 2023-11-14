@@ -9,6 +9,7 @@ CREATE TABLE `users`(
     `password`      binary(32) NOT NULL,
     `updated_at`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `created_at`    datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `is_deleted`    boolean NOT NULL DEFAULT b'0',
     PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8mb4;
 
