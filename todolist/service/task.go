@@ -138,6 +138,9 @@ func ShowTask(ctx *gin.Context) {
 
 	var remainingDays int
 	remainingDays = int(task.Deadline.Sub(task.CreatedAt).Hours()/24) + 1
+	if remainingDays < 0 {
+		remainingDays = 0
+	}
 	var remainingDaysStr = strconv.Itoa(remainingDays) + "日"
 
 	// Render task

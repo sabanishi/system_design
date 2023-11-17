@@ -3,7 +3,6 @@ package service
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"net/http"
 
 	database "todolist.go/db"
@@ -140,7 +139,6 @@ func Login(ctx *gin.Context) {
 
 func LoginCheck(ctx *gin.Context) {
 	if sessions.Default(ctx).Get(userkey) == nil {
-		fmt.Println("Not logged in")
 		ctx.Redirect(http.StatusFound, "/login")
 		ctx.Abort()
 	} else {
